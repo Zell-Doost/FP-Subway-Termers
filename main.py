@@ -9,16 +9,15 @@ W, S, A, D, Q, E = 1, 2, 3, 4, 5, 6
 pressed = {W: False, S: False, A: False, D: False, 
            Q: False, E: False}
 
-level = [[1, 1, 1, 1, 1, 1, 1, 1], 
-         [1, 0, 0, 0, 0, 0, 0, 1],
-         [1, 0, 0, 0, 0, 0, 0, 1], 
-         [1, 0, 0, 1, 0, 0, 0, 1],
-         [1, 0, 0, 0, 0, 0, 0, 1], 
-         [1, 0, 0, 0, 0, 0, 0, 1],
-         [1, 0, 0, 0, 0, 0, 0, 1], 
-         [1, 1, 1, 1, 1, 1, 1, 1]]
-
-
+level = [[1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0], 
+         [1, 2, 2, 2, 2, 2, 2, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+         [1, 0, 0, 0, 0, 0, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], 
+         [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], 
+         [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], 
+         [1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], 
+         [1, 0, 0, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], 
+         [1, 2, 2, 2, 2, 2, 2, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], 
+         [1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]]
 
 def on_press(key):
     #if key not in pressed:
@@ -32,10 +31,6 @@ def on_press(key):
             pressed[A] = True
         if key.char == 'd':
             pressed[D] = True
-        if key.char == 'q':
-            pressed[Q] = True
-        if key.char == 'e':
-            pressed[E] = True
     except:
         pass
 
@@ -53,10 +48,6 @@ def on_release(key):
             pressed[A] = False
         if key.char == 'd':
             pressed[D] = False
-        if key.char == 'q':
-            pressed[Q] = False
-        if key.char == 'e':
-            pressed[E] = False
 
 
     except:
@@ -69,21 +60,19 @@ listener.start()
 
 
 def main(stdscr):
-    
+    timer = 0
     stdscr.clear()
-    player = Player((5, 4))
+    player = Player()
     renderer = Render()
     for _ in range(10000):
-        player.input_handle(pressed)
-        player.move()
+        player.move(pressed, timer)
         for i in range(50):
             for j in range(169):
                 stdscr.addstr(i, j, " ")
         for i in range(-60, 60):
             renderer.cast_ray(player, level, i, stdscr)
-        stdscr.addstr(0, 0, "         ")
-        stdscr.addstr(0, 0, str(player.angle))
         stdscr.refresh()
+        timer += 1
         time.sleep(1/60)
         
 

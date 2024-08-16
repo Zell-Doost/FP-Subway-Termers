@@ -9,43 +9,43 @@ def input_to_string(n):
     return str(n.char)
 
 class Player:
-    def __init__(self, position):
-        self.x, self.y = position
-        self.angle = math.pi/2
-        self.health = 100
-        self.speed = 0.1
-        self.inputs = []
+    def __init__(self):
+        self.x = 21
+        self.y = 3
+        self.angle = math.pi
+        self.sliding = False
+        self.slide_timer = 0
+        self.jumping = False
+        self.jumping_timer = 0
 
-    def input_handle(self, inputs):
-        self.inputs = inputs
-
-    def move(self):
-
-        if self.inputs[W] == True:
-        #if self.inputs:
-            #return type(self.inputs[0])
-            self.x += self.speed*math.cos(self.angle)
-            self.y += self.speed*math.sin(self.angle)
-
-        if self.inputs[S] == True:
-            self.x -= self.speed*math.cos(self.angle)
-            self.y -= self.speed*math.sin(self.angle)
-
-        if self.inputs[A] == True:
-            self.x += self.speed*math.sin(self.angle)
-            self.y -= self.speed*math.cos(self.angle)
-
-        if self.inputs[D] == True:
-            self.x -= self.speed*math.sin(self.angle)
-            self.y += self.speed*math.cos(self.angle)
+    def move(self, inputs, timer):
         
-        if self.inputs[Q] == True:
-            self.angle -= 0.1
-            if self.angle < 0:
-                self.angle += 2*math.pi
+        self.x -= 0.1
+        
 
-        if self.inputs[E] == True:
-            self.angle += 0.1
-            if self.angle > 2*math.pi:
-                self.angle -= 2*math.pi
+        if inputs[W] == True:
+            if self.jumping_timer == 0:
+                self.jumping = True
+                self.jump_timer = timer
+        if self.jumping and timer - self.jump_timer > 20:
+            inputs[W] = False
+            self.jump_timer = 0
+            self.jumping = False
+
+        if inputs[S] == True:
+            if self.slide_timer == 0:
+                self.sliding = True
+                self.slide_timer = timer
+        if self.sliding and timer - self.slide_timer > 20:
+            inputs[S] = False
+            self.slide_timer = 0
+            self.sliding = False
+
+        if inputs[A] == True:
+            if self.y > 2:
+                self.y -= 3
+
+        if inputs[D] == True:
+            if self.y < 8:
+                self.y += 3
 
