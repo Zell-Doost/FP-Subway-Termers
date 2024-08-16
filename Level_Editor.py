@@ -144,7 +144,7 @@ def main(stdscr):
 		if event == ord("q"): break
 		elif event == curses.KEY_MOUSE:
 			click = curses.getmouse()
-			stdscr.addstr(40, 40, str(click))
+			#stdscr.addstr(40, 40, str(click))
 			_, mouse_x, mouse_y, _, _ = click
 			level_mouse_x = mouse_x/2
 			
