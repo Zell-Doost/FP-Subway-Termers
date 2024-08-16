@@ -27,53 +27,20 @@ class Render:
         ##Check Horizontal Walls
         view_length = 0
         ray_y, ray_x, y_offset, x_offset = 0, 0, 0, 0
-        #if ray_angle > math.pi:
-        if player.angle > math.pi:
+        if ray_angle > math.pi:
+        #if player.angle > math.pi:
             ray_y = int(player.y)
             ray_x = (player.y - ray_y) * aTan + player.x
             y_offset = -1
             x_offset = -y_offset*aTan
-        #if ray_angle < math.pi:
-        if player.angle < math.pi:
+        if ray_angle < math.pi:
+        #if player.angle < math.pi:
             ray_y = int(player.y) + 1
             ray_x = (player.y - ray_y) * aTan + player.x
-            y_offset = -1
+            y_offset = 1
             x_offset = -y_offset*aTan
-        #if ray_angle == 0 or ray_angle == math.pi:
-        if player.angle == 0 or player.angle == math.pi:
-            ray_y = player.y
-            ray_x = player.x
-            view_length = 8
-
-
-        while view_length < 8:
-            if abs(int(ray_y)) < len(level) and abs(int(ray_x)) < len(level[0]) and level[int(ray_y)][int(ray_x)] == 1:
-                view_length = 8
-            else:
-                ray_x += x_offset
-                ray_y += y_offset
-                view_length += 1
-        x_length = abs(player.x - ray_x)
-        y_length = abs(player.y - ray_y)
-        hw_ray_length = math.sqrt(x_length**2 + y_length**2)
-
-        #Check Vertical Lines
-        view_length = 0
-        ray_y, ray_x, y_offset, x_offset = 0, 0, 0, 0
-        #if ray_angle > math.pi/2 and ray_angle < 3*math.pi/2:
-        if player.angle > math.pi/2 and player.angle < 3*math.pi/2:
-            ray_x = int(player.x)
-            ray_y = (player.x - ray_x) * nTan + player.y
-            x_offset = -1
-            y_offset = -x_offset*nTan
-        #if ray_angle < math.pi/2 or ray_angle > 3*math.pi/2:
-        if player.angle < math.pi/2 or player.angle > 3*math.pi/2:
-            ray_x = int(player.x) + 1
-            ray_y = (player.x - ray_x) * nTan + player.y
-            x_offset = -1
-            y_offset = -y_offset*nTan
-        #if ray_angle == math.pi/2 or ray_angle == 3*math.pi/2:
-        if player.angle == math.pi/2 or player.angle == 3*math.pi/2:
+        if ray_angle == 0 or ray_angle == math.pi:
+        #if player.angle == 0 or player.angle == math.pi:
             ray_y = player.y
             ray_x = player.x
             view_length = 8
@@ -81,7 +48,7 @@ class Render:
 
         while view_length < 8:
             try:
-                if abs(int(ray_y)) < len(level) and abs(int(ray_x)) < len(level[0]) and level[int(ray_y)][int(ray_x)] == 1:
+                if abs(int(ray_y)) <= len(level) and abs(int(ray_x)) <= len(level[0]) and level[int(abs(ray_y)-1)][int(abs(ray_x)-1)] == 1:
                     view_length = 8
                 else:
                     ray_x += x_offset
@@ -89,12 +56,56 @@ class Render:
                     view_length += 1
             except:
                 curses.endwin()
+                print(f'ray_y: {ray_y}, ray_x: {ray_x}')
+                sys.exit()
+        x_length = abs(player.x - ray_x)
+        y_length = abs(player.y - ray_y)
+        hw_ray_length = math.sqrt(x_length**2 + y_length**2)
+
+        #Check Vertical Lines
+        view_length = 0
+        ray_y, ray_x, y_offset, x_offset = 0, 0, 0, 0
+        if ray_angle > math.pi/2 and ray_angle < 3*math.pi/2:
+        #if player.angle > math.pi/2 and player.angle < 3*math.pi/2:
+            ray_x = int(player.x)
+            ray_y = (player.x - ray_x) * nTan + player.y
+            x_offset = -1
+            y_offset = -x_offset*nTan
+        if ray_angle < math.pi/2 or ray_angle > 3*math.pi/2:
+        #if player.angle < math.pi/2 or player.angle > 3*math.pi/2:
+            ray_x = int(player.x) + 1
+            ray_y = (player.x - ray_x) * nTan + player.y
+            x_offset = 1
+            y_offset = -x_offset*nTan
+        if ray_angle == math.pi/2 or ray_angle == 3*math.pi/2:
+        #if player.angle == math.pi/2 or player.angle == 3*math.pi/2:
+            ray_y = player.y
+            ray_x = player.x
+            view_length = 8
+
+
+        while view_length < 8:
+            try:
+                if abs(int(ray_y)) <= len(level) and abs(int(ray_x)) <= len(level[0]) and level[int(ray_y)-1][int(ray_x)-1] == 1:
+                    view_length = 8
+                else:
+                    ray_x += x_offset
+                    ray_y += y_offset
+                    view_length += 1
+            except:
+                return
+                curses.endwin()
                 print(f"ray_y: {ray_y}, ray_x: {ray_x}")
         x_length = abs(player.x - ray_x)
         y_length = abs(player.y - ray_y)
         vw_ray_length = math.sqrt(x_length**2 + y_length**2)       
 
-        ray_length = max(hw_ray_length, vw_ray_length)
+        if hw_ray_length == 0:
+            hw_ray_length = 1
+        if vw_ray_length == 0:
+            vw_ray_length = 1
+
+        ray_length = min(hw_ray_length, vw_ray_length)
         ray_length *= math.cos(player.angle-ray_angle)
         wall_height = 40 / ray_length
         if wall_height > 40:
@@ -105,9 +116,9 @@ class Render:
         for i in range(int(25-wall_height//2), int(wall_height+25-wall_height//2)):
             try:
                 if vw_ray_length > hw_ray_length:
-                    screen.addstr(i, int(ray_angle*(180/math.pi)), "#")
+                    screen.addstr(i, int((ray_angle-player.angle)*(180/math.pi)+80), "#")
                 else:
-                    screen.addstr(i, int(ray_angle*(180/math.pi)), "#", curses.A_DIM)
+                    screen.addstr(i, int((ray_angle-player.angle)*(180/math.pi)+80), "#", curses.A_DIM)
             except:
                 return
                 curses.endwin()

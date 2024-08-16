@@ -25,25 +25,27 @@ class Player:
         #if self.inputs:
             #return type(self.inputs[0])
             self.x += self.speed*math.cos(self.angle)
-            self.y -= self.speed*math.sin(self.angle)
+            self.y += self.speed*math.sin(self.angle)
 
         if self.inputs[S] == True:
             self.x -= self.speed*math.cos(self.angle)
-            self.y += self.speed*math.sin(self.angle)
+            self.y -= self.speed*math.sin(self.angle)
 
         if self.inputs[A] == True:
-            self.x -= self.speed*math.sin(self.angle)
-
+            self.x += self.speed*math.sin(self.angle)
             self.y -= self.speed*math.cos(self.angle)
 
         if self.inputs[D] == True:
-            self.x += self.speed*math.sin(self.angle)
-
+            self.x -= self.speed*math.sin(self.angle)
             self.y += self.speed*math.cos(self.angle)
         
         if self.inputs[Q] == True:
-            self.angle += 0.1
+            self.angle -= 0.1
+            if self.angle < 0:
+                self.angle += 2*math.pi
 
         if self.inputs[E] == True:
-            self.angle -= 0.1
+            self.angle += 0.1
+            if self.angle > 2*math.pi:
+                self.angle -= 2*math.pi
 

@@ -73,7 +73,7 @@ def main(stdscr):
     stdscr.clear()
     player = Player((5, 4))
     renderer = Render()
-    for _ in range(1000):
+    for _ in range(10000):
         player.input_handle(pressed)
         player.move()
         for i in range(50):
@@ -81,6 +81,8 @@ def main(stdscr):
                 stdscr.addstr(i, j, " ")
         for i in range(-60, 60):
             renderer.cast_ray(player, level, i, stdscr)
+        stdscr.addstr(0, 0, "         ")
+        stdscr.addstr(0, 0, str(player.x))
         stdscr.refresh()
         time.sleep(1/60)
         
