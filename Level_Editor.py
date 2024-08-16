@@ -8,45 +8,79 @@ def create_level(x_pos: int, y_pos: int) -> list[list[str]]:
 	for i in range(y_pos):
 		row = []
 		for j in range(x_pos):
-			row.append("0")
+			if i in [0, y_pos-1] or j in [0, x_pos-1]:
+				tile = "1"
+			else:
+				tile = "0"
+			row.append(tile)
 		board.append(row)
 
 
 	return board
 
 
-def draw_level(level: list[list[str]], stdscr):
+def draw_level(level: list[list[str]], stdscr, editor_mode: str):
 	stdscr.clear()
 	for i in level:
 		for j in i:
 			stdscr.addstr(j)
-			#stdscr.addstr(" ")
+			stdscr.addstr(" ")
 		stdscr.addstr("\n")
+	stdscr.addstr("\n")
+	colour_map = {"1": curses.A_BOLD, "2": curses.A_BOLD, "3": curses.A_BOLD, "0": curses.A_BOLD}
+	colour_map[editor_mode] = curses.A_STANDOUT
+	stdscr.addstr("modes (press key to change input): " + "\n")
+	stdscr.addstr("0: floor ", colour_map["0"])
+	stdscr.addstr(" 1: wall ", colour_map["1"])
+	stdscr.addstr(" 2: door ", colour_map["2"])
+	stdscr.addstr(" 3: enemy ", colour_map["3"])
+	
 
+def mode(character: int) -> str:
+	#wall
+	if character == ord("1"):
+		return "1"
+	#door
+	if character == ord("2"):
+		return "2" #placeholder
+	#enemy placeholder
+	if character == ord("3"):
+		return "3"
+	else:
+		return "0"
 
-	stdscr.refresh()
-
-
+		
+		
+	
 
 def main(stdscr):
+	editor_mode = mode(0)
+	
+	curses.init_pair(1, curses.COLOR_BLUE, curses.COLOR_YELLOW)
 	curses.mousemask(1)
 	level = create_level(20, 20)
-	level[0][10] = "J"
-	draw_level(level, stdscr)
-	
+
 	while True:
+		draw_level(level, stdscr, editor_mode)
+		stdscr.refresh()
 		event = stdscr.getch()
 		if event == ord("q"): break
 		if event == curses.KEY_MOUSE:
 			click = curses.getmouse()
 			_, mouse_x, mouse_y, _, _ = click
-			if mouse_x < len(level[0]) and mouse_y < len(level):
-				level[mouse_y][mouse_x] = "1"
-				draw_level(level, stdscr)
+			level_mouse_x = mouse_x/2
+			
+			if level_mouse_x.is_integer() and level_mouse_x < len(level[0]) and mouse_y < len(level):
+				level[mouse_y][int(level_mouse_x)] = editor_mode
 			stdscr.addstr(30, 30, str(click))
+		else:
+			editor_mode = mode(event)
+			colour_map = {"1": curses.A_BOLD, "d": curses.A_BOLD, "2": curses.A_BOLD, "e": curses.A_BOLD, "0": curses.A_BOLD}
+			colour_map[editor_mode] = curses.A_STANDOUT
 			stdscr.refresh()
+
+			
 	stdscr.refresh()
-	stdscr.getch()
 
 
 
