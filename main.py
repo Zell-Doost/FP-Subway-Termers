@@ -10,11 +10,11 @@ pressed = {W: False, S: False, A: False, D: False,
            Q: False, E: False}
 
 level = [[1, 1, 1, 1, 1, 1, 1, 1], 
-         [1, 0, 0, 0, 0, 0, 1, 1],
+         [1, 0, 0, 0, 0, 0, 0, 1],
          [1, 0, 0, 0, 0, 0, 0, 1], 
-         [1, 0, 0, 1, 0, 0, 1, 1],
-         [1, 1, 0, 0, 0, 0, 0, 1], 
-         [1, 0, 0, 0, 0, 0, 1, 1],
+         [1, 0, 0, 1, 0, 0, 0, 1],
+         [1, 0, 0, 0, 0, 0, 0, 1], 
+         [1, 0, 0, 0, 0, 0, 0, 1],
          [1, 0, 0, 0, 0, 0, 0, 1], 
          [1, 1, 1, 1, 1, 1, 1, 1]]
 
@@ -82,7 +82,7 @@ def main(stdscr):
         for i in range(-60, 60):
             renderer.cast_ray(player, level, i, stdscr)
         stdscr.addstr(0, 0, "         ")
-        stdscr.addstr(0, 0, str(player.x))
+        stdscr.addstr(0, 0, str(player.angle))
         stdscr.refresh()
         time.sleep(1/60)
         
