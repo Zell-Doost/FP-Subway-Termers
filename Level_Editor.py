@@ -27,13 +27,14 @@ def draw_level(level: list[list[str]], stdscr, editor_mode: str):
 			stdscr.addstr(" ")
 		stdscr.addstr("\n")
 	stdscr.addstr("\n")
-	colour_map = {"1": curses.A_BOLD, "2": curses.A_BOLD, "3": curses.A_BOLD, "0": curses.A_BOLD}
+	colour_map = {"1": curses.A_BOLD, "2": curses.A_BOLD, "3": curses.A_BOLD, "0": curses.A_BOLD, "4": curses.A_BOLD}
 	colour_map[editor_mode] = curses.A_STANDOUT
 	stdscr.addstr("modes (press key to change input): " + "\n")
 	stdscr.addstr("0: floor ", colour_map["0"])
 	stdscr.addstr(" 1: wall ", colour_map["1"])
 	stdscr.addstr(" 2: door ", colour_map["2"])
 	stdscr.addstr(" 3: enemy ", colour_map["3"])
+	stdscr.addstr(" 4: move/add player character", colour_map["4"])
 	
 
 def mode(character: int) -> str:
@@ -46,6 +47,8 @@ def mode(character: int) -> str:
 	#enemy placeholder
 	if character == ord("3"):
 		return "3"
+	if character == ord("4"):
+		return "4"
 	else:
 		return "0"
 
@@ -58,7 +61,7 @@ def main(stdscr):
 	
 	curses.init_pair(1, curses.COLOR_BLUE, curses.COLOR_YELLOW)
 	curses.mousemask(1)
-	level = create_level(20, 20)
+	level = create_level(10, 20)
 
 	while True:
 		draw_level(level, stdscr, editor_mode)
@@ -71,12 +74,17 @@ def main(stdscr):
 			level_mouse_x = mouse_x/2
 			
 			if level_mouse_x.is_integer() and level_mouse_x < len(level[0]) and mouse_y < len(level):
+				if editor_mode == "4":
+					for i in range(len(level)):
+						for j in range(len(level[i])):
+							if level[i][j] == "4":
+								level[i][j] = "0"
+
+
 				level[mouse_y][int(level_mouse_x)] = editor_mode
 			stdscr.addstr(30, 30, str(click))
 		else:
 			editor_mode = mode(event)
-			colour_map = {"1": curses.A_BOLD, "d": curses.A_BOLD, "2": curses.A_BOLD, "e": curses.A_BOLD, "0": curses.A_BOLD}
-			colour_map[editor_mode] = curses.A_STANDOUT
 			stdscr.refresh()
 
 			
