@@ -1,13 +1,24 @@
-import curses, os, time
+import curses, os, time, math
 from pynput import keyboard
 from pynput.keyboard import Key
 from player import Player
+from renderer import Render
 
 W, S, A, D, Q, E = 1, 2, 3, 4, 5, 6
 
 pressed = {W: False, S: False, A: False, D: False, 
            Q: False, E: False}
-#pressed = []
+
+level = [[1, 1, 1, 1, 1, 1, 1, 1], 
+         [1, 0, 0, 0, 0, 0, 1, 1],
+         [1, 0, 0, 0, 0, 0, 0, 1], 
+         [1, 0, 0, 1, 0, 0, 1, 1],
+         [1, 1, 0, 0, 0, 0, 0, 1], 
+         [1, 0, 0, 0, 0, 0, 1, 1],
+         [1, 0, 0, 0, 0, 0, 0, 1], 
+         [1, 1, 1, 1, 1, 1, 1, 1]]
+
+
 
 def on_press(key):
     #if key not in pressed:
@@ -60,14 +71,16 @@ listener.start()
 def main(stdscr):
     
     stdscr.clear()
-    player = Player([0, 0])
+    player = Player((5, 4))
+    renderer = Render()
     for _ in range(1000):
         player.input_handle(pressed)
         player.move()
-        stdscr.addstr(0, 0, "                           ")
-        stdscr.addstr(1, 0, "                           ")
-        stdscr.addstr(0, 0, str(player.inputs))
-        stdscr.addstr(1, 0, str(player.position))
+        for i in range(50):
+            for j in range(169):
+                stdscr.addstr(i, j, " ")
+        for i in range(-60, 60):
+            renderer.cast_ray(player, level, i, stdscr)
         stdscr.refresh()
         time.sleep(1/60)
         
