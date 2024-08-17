@@ -10,8 +10,8 @@ def input_to_string(n):
 
 class Player:
     def __init__(self):
-        self.x = 21
-        self.y = 3
+        self.x = 1
+        self.y = 0
         self.angle = math.pi
         self.sliding = False
         self.slide_timer = 0
@@ -21,7 +21,7 @@ class Player:
 
     def move(self, inputs, timer):
         
-        self.x -= 0.01
+        self.y += 0.1
         
 
         if inputs[W] and not self.jumping:
@@ -45,13 +45,13 @@ class Player:
 
         if inputs[A] == True:
             inputs[A] = False
-            if self.y < 4:
-                self.y += 1
+            if self.x < 4:
+                self.x += 1
 
         if inputs[D] == True:
             inputs[D] = False
-            if self.y > 2:
-                self.y -= 1
+            if self.x > 2:
+                self.x -= 1
     
     def is_hit(self, level):
         pass
