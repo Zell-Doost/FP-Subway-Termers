@@ -5,6 +5,17 @@ from player import Player
 class Render:
     def __init__(self):
         self.ray_angles = []
+        curses.init_pair(1, curses.COLOR_WHITE, curses.COLOR_BLACK)
+        curses.init_pair(2, curses.COLOR_BLUE, curses.COLOR_BLACK)
+        curses.init_pair(3, curses.COLOR_GREEN, curses.COLOR_BLACK)
+        curses.init_pair(4, curses.COLOR_RED, curses.COLOR_BLACK)
+        curses.init_pair(5, curses.COLOR_YELLOW, curses.COLOR_BLACK)
+        self.colour1 = curses.color_pair(1)
+        self.colour2 = curses.color_pair(2)
+        self.colour3 = curses.color_pair(3)
+        self.colour4 = curses.color_pair(4)
+        self.colour5 = curses.color_pair(5)
+        self.colour = [self.colour1, self.colour1]
 
     def cast_ray(self, player, level, ray_offset, screen):
 
@@ -23,8 +34,8 @@ class Render:
         #    ray_angle -= 2*math.pi
         ray_x, ray_y, x_offset, y_offset = 0, 0, 0, 0
         hw_ray_length = 1000000000
-        hx_ray_length = player.x
-        hy_ray_length = player.y
+        hx_length = player.x
+        hy_length = player.y
         vw_ray_length = 1000000000
         vx_length = player.x
         vy_length = player.y
@@ -51,18 +62,31 @@ class Render:
         #if player.angle == math.pi/2 or player.angle == 3*math.pi/2:
             ray_y = player.y
             ray_x = player.x
+            view_length = 20
 
 
-        while view_length < 8:
+        while view_length < 20:
             try:
-                if abs(ray_y) <= len(level) and abs(ray_x) <= len(level[0]) and level[int(ray_y)-1][int(ray_x)-1] == 1:
-                    view_length = 8
+                if abs(ray_y) <= len(level) and abs(ray_x) <= len(level[0]) and level[int(ray_y)-1][int(ray_x)-1] == 2:
+                    self.colour[0] = self.colour2
+                    view_length = 20
+                elif abs(ray_y) <= len(level) and abs(ray_x) <= len(level[0]) and level[int(ray_y)-1][int(ray_x)-1] == 3:
+                    self.colour[0] = self.colour3
+                    view_length = 20
+                elif abs(ray_y) <= len(level) and abs(ray_x) <= len(level[0]) and level[int(ray_y)-1][int(ray_x)-1] == 4:
+                    self.colour[0] = self.colour5
+                    view_length = 20
+
+                elif abs(ray_y) <= len(level) and abs(ray_x) <= len(level[0]) and level[int(ray_y)-1][int(ray_x)-1] == 5:
+                    self.colour[0] = self.colour4
+                    view_length = 20
+
                 else:
                     ray_x += x_offset
                     ray_y += y_offset
                     view_length += 1
             except:
-                return
+                #return
                 curses.endwin()
                 print(f"ray_y: {ray_y}, ray_x: {ray_x}")
         #----------------------------------------------
@@ -98,14 +122,28 @@ class Render:
 
         while view_length < 8:
             try:
-                if abs(ray_y) <= len(level) and abs(ray_x) <= len(level[0]) and level[int(ray_y)-1][int(ray_x)-1] == 1:
+                if ray_y <= len(level) and abs(ray_x) <= len(level[0]) and level[int(ray_y)-1][int(ray_x)-1] == 1:
+                    self.colour[1] = self.colour1
                     view_length = 8
+                elif abs(ray_y) <= len(level) and abs(ray_x) <= len(level[0]) and level[int(ray_y)-1][int(ray_x)-1] == 2:
+                    self.colour[1] = self.colour2
+                    view_length = 8
+                elif abs(ray_y) <= len(level) and abs(ray_x) <= len(level[0]) and level[int(ray_y)-1][int(ray_x)-1] == 3:
+                    self.colour[1] = self.colour3
+                    view_length = 8
+                elif abs(ray_y) <= len(level) and abs(ray_x) <= len(level[0]) and level[int(ray_y)-1][int(ray_x)-1] == 5:
+                    self.colour[1] = self.colour4
+                    view_length = 8
+
                 else:
                     ray_x += x_offset
                     ray_y += y_offset
                     view_length += 1
             except:
-                return
+                #return
+                curses.endwin()
+                print("fef")
+                sys.exit()
         #if player.angle > math.pi/2:
             #---------------------------------------------
             #ray_x += 1
@@ -136,8 +174,10 @@ class Render:
         vertical_draw = (int(25-wall_height//2), int(wall_height+25-wall_height//2))
         if player.sliding:
             vertical_draw = (int(25-wall_height), 25)
-        if player.jumping:
+        if player.jumping or player.incline:
             vertical_draw = (25, int(25+wall_height))
+        #if player.jumping and player.incline:
+        #    vertical_draw = (int(25+wall_height//4), int(25+wall_height*1.5))
         for i in range(vertical_draw[0], vertical_draw[1]):
             try:
                 #Horizontal wall are light, vertical wall are dark
@@ -147,18 +187,19 @@ class Render:
                     ray_angle += 2*math.pi
 
                 x_graph = int((ray_angle - player.angle) * (180 / math.pi) + 80)
-                
+                screen.addstr(0, 0, "     ")
+                screen.addstr(0, 0, str(player.is_dead(level)))
                 if vw_ray_length > hw_ray_length:
-                    screen.addstr(i, x_graph, "#")
+                    screen.addstr(i, x_graph, "#", self.colour[1])
                 else:
-                    screen.addstr(i, x_graph, "#", curses.A_DIM)
+                    screen.addstr(i, x_graph, "#", self.colour[0] | curses.A_DIM)
             except:
                 return
-                curses.endwin()
-                print(i)
-                print(int(ray_angle*(180/math.pi)))
-                sys.exit()
-                pass
+            #    curses.endwin()
+            #    print(i)
+            #    print(int(ray_angle*(180/math.pi)))
+            #    sys.exit()
+            #    pass
 
 
 
