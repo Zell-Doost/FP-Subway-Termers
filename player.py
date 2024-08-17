@@ -21,7 +21,7 @@ class Player:
 
     def move(self, inputs, timer):
         
-        self.x -= 0.1
+        self.x -= 0.01
         
 
         if inputs[W] and not self.jumping:

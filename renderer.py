@@ -1,5 +1,7 @@
 import math, curses, sys
 from player import Player
+from sprite import sprites
+
 
 
 class Render:
@@ -64,19 +66,25 @@ class Render:
             ray_x = player.x
             view_length = 20
 
-
+        
+        self.used_sprite = 0
         while view_length < 20:
             try:
                 if abs(ray_y) <= len(level) and abs(ray_x) <= len(level[0]) and level[int(ray_y)-1][int(ray_x)-1] == 2:
                     self.colour[0] = self.colour2
+                    self.used_sprite = 1
                     view_length = 20
+                    sheight = 15
                 elif abs(ray_y) <= len(level) and abs(ray_x) <= len(level[0]) and level[int(ray_y)-1][int(ray_x)-1] == 3:
                     self.colour[0] = self.colour3
+                    self.used_sprite = 0
                     view_length = 20
+                    sheight = 31
                 elif abs(ray_y) <= len(level) and abs(ray_x) <= len(level[0]) and level[int(ray_y)-1][int(ray_x)-1] == 4:
                     self.colour[0] = self.colour5
+                    self.used_sprite = 2
                     view_length = 20
-
+                    sheight = 18
                 elif abs(ray_y) <= len(level) and abs(ray_x) <= len(level[0]) and level[int(ray_y)-1][int(ray_x)-1] == 5:
                     self.colour[0] = self.colour4
                     view_length = 20
@@ -171,37 +179,40 @@ class Render:
         wall_height = 40 / ray_length
         if wall_height > 40:
             wall_height = 40
-        vertical_draw = (int(25-wall_height//2), int(wall_height+25-wall_height//2))
+        vertical_draw = (int(25-wall_height//2), int(wall_height+25))
         if player.sliding:
             vertical_draw = (int(25-wall_height), 25)
         if player.jumping or player.incline:
             vertical_draw = (25, int(25+wall_height))
         #if player.jumping and player.incline:
         #    vertical_draw = (int(25+wall_height//4), int(25+wall_height*1.5))
+        ty = 0.0
+        tx = int(ray_x//2)%50
+        ty_step = 10/wall_height
+
         for i in range(vertical_draw[0], vertical_draw[1]):
-            try:
+            #try:
                 #Horizontal wall are light, vertical wall are dark
                 if abs(ray_angle - player.angle) > 2 and player.angle < math.pi/2:
                     ray_angle -= 2*math.pi
                 if abs(ray_angle - player.angle) > 2 and player.angle > 3*math.pi/2:
                     ray_angle += 2*math.pi
 
-                x_graph = int((ray_angle - player.angle) * (180 / math.pi) + 80)
+                x_graph = int((ray_angle - player.angle) * (180 / math.pi) + 100)
                 screen.addstr(0, 0, "     ")
                 screen.addstr(0, 0, str(player.is_dead(level)))
-                if vw_ray_length > hw_ray_length:
-                    screen.addstr(i, x_graph, "#", self.colour[1])
+                if vw_ray_length > hw_ray_length and i%2 == 0:
+                    screen.addstr(i//3, x_graph//2, "#", self.colour[1])
                 else:
-                    screen.addstr(i, x_graph, "#", self.colour[0] | curses.A_DIM)
-            except:
-                return
-            #    curses.endwin()
-            #    print(i)
-            #    print(int(ray_angle*(180/math.pi)))
-            #    sys.exit()
-            #    pass
-
-
+                    screen.addstr(i//3, x_graph, sprites[0][i//3][x_graph//4], self.colour[0] | curses.A_DIM)
+                ty += ty_step
+            #except:
+                
+                #return
+                #curses.endwin()
+                #print(i)
+                #print(int(x_graph))
+                #sys.exit()
 
 
 
